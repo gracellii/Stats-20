@@ -1,33 +1,69 @@
 library(shiny)
-library(ggplot2)
-
-dataset <- diamonds
 
 fluidPage(
-  
-  titlePanel("Diamonds Explorer"),
-  
-  sidebarPanel(
-    
-    sliderInput('sampleSize', 'Sample Size', min=1, max=nrow(dataset),
-                value=min(1000, nrow(dataset)), step=500, round=0),
-    
-    #first arg, what the variable is called
-    #second arg, what appears on the UI
-    
-    selectInput('x', 'X', names(dataset)),
-    selectInput('y', 'Y', names(dataset), names(dataset)[[2]]),
-    selectInput('color', 'Color', c('None', names(dataset))),
-    
-    checkboxInput('jitter', 'Jitter'),
-    checkboxInput('smooth', 'Smooth'),
-    
-    selectInput('facet_row', 'Facet Row', c(None='.', names(dataset))),
-    selectInput('facet_col', 'Facet Column', c(None='.', names(dataset)))
-  ),
-  
-  mainPanel(
-    plotOutput('plot')
+
+  tags$script(HTML("
+      $(document).on('shiny:connected', function() {
+        var slider = $('#time').data('ionRangeSlider');
+        var originalChange = slider.options.onChange;
+
+        slider.update({
+          onChange: function(data) {
+            if (originalChange) {
+              originalChange.call(this, data);
+            }
+
+            Shiny.setInputValue(
+              'time_seek',
+              data.from,
+              {priority: 'event'}
+            );
+          }
+        });
+      });
+    ")),
+
+  titlePanel("Cycloidal Curves"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        "type", "Curve type",
+        choices = c(
+          "Hypotrochoid" = "hypo",
+          "Epitrochoid" = "epi"
+        )
+      ),
+
+      sliderInput(
+        "R", "Fixed-circle radius",
+        min = 1, max = 10, value = 3, step = 0.1
+      ),
+      sliderInput(
+        "r", "Rolling-circle radius",
+        min = 0.1, max = 5, value = 1, step = 0.1
+      ),
+      sliderInput(
+        "d", "Tracing-point distance",
+        min = 0, max = 5, value = 1, step = 0.1
+      ),
+    ),
+
+
+    mainPanel(
+      plotOutput("plot", height = "550px"),
+
+      sliderInput(
+        "duration", "Duration to complete the entire curve",
+        min = 1, max = 100, value = 10, step = 1,
+        post = " s"
+      ),
+
+      sliderInput(
+        "time", "Time elapsed",
+        min = 0, max = 10, value = 0, step = 0.1,
+        post = " s",
+      ),
+      actionButton("play_pause", "Play / Pause")
+    )
   )
 )
-
