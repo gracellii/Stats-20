@@ -5,12 +5,12 @@ An interactive R Shiny application for exploring the `diamonds` dataset with cus
 ## Requirements
 
 - [R](https://cran.r-project.org/)
-- R packages: `shiny` and `ggplot2`
+- R packages: `shiny`, `ggplot2`, `colourpicker`
 
 Install the packages once in R:
 
 ```r
-install.packages(c("shiny", "ggplot2"))
+install.packages(c("shiny", "ggplot2","colourpicker"))
 ```
 
 ## Run the app
