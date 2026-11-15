@@ -222,7 +222,7 @@ function(input, output, session) {
       geom_path(
         data = rolling_circle,
         aes(x, y),
-        color = "#3B82F6",
+        color = input$circle_color,
         linewidth = 0.8
       ) +
       {
@@ -239,13 +239,13 @@ function(input, output, session) {
         "segment",
         x = cx, y = cy,
         xend = px, yend = py,
-        color = "#3B82F6",
+        color = input$circle_color,
         linewidth = 0.6
       ) +
       annotate(
         "point",
         x = cx, y = cy,
-        color = "#3B82F6",
+        color = "black",
         size = 2
       ) +
       annotate(

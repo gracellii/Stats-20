@@ -47,6 +47,13 @@ fluidPage(
         "d", "Tracing-point distance",
         min = 0, max = 5, value = 1, step = 0.1
       ),
+      h4("Appearance"),
+      colourInput(
+        "circle_color",
+        "Rolling circle color",
+        value = "#3B82F6",
+        showColour = "both"
+      ),
       colourInput(
         "curve_color",
         "Traced curve color",
