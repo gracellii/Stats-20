@@ -150,6 +150,20 @@ function(input, output, session) {
     )
   })
 
+  output$curve_description <- renderUI({
+    if (input$type == "hypo") {
+      div( class = "curve-description",
+        "A", strong("hypotrochoid"), "is a curve traced by a point attached
+        to a circle rolling", strong("inside"), "a larger static circle."
+      )
+    } else {
+      div( class = "curve-description",
+        "An",strong("epitrochoid"), "is a curve traced by a point attached
+        to a circle rolling", strong("outside"), "a larger static circle."
+      )
+    }
+  })
+
   output$plot <- renderPlot({
     R <- input$R
     r <- input$r

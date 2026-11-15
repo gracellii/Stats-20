@@ -34,6 +34,8 @@ fluidPage(
           "Epitrochoid" = "epi"
         )
       ),
+      uiOutput("curve_description"),
+
       h4("Curve Parameters"),
       sliderInput(
         "R", "Fixed-circle radius",
@@ -79,5 +81,17 @@ fluidPage(
       ),
       uiOutput("play_pause_button") 
     )
-  )
+  ),    
+  tags$style(HTML("
+      .curve-description {
+        padding: 10px 12px;
+        margin: 10px 0 20px 0;
+        border-radius: 4px;
+        color: #334155;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+  "))
+  
 )
+
