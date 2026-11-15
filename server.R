@@ -43,6 +43,14 @@ function(input, output, session) {
   })
   playing <- reactiveVal(FALSE) # check if the animation is ongoing
   # playing () Read the current value; playing(TRUE/FALSE) sets the value
+  output$play_pause_button <- renderUI({
+  #dynamically change pause/play button label and icon 
+  if (playing()) {
+    actionButton( "play_pause", "Pause", icon = icon("pause"))
+  } else {
+    actionButton( "play_pause", "Play", icon = icon("play"))
+  }
+  })
   animation_time <- reactiveVal(0)
   last_slider_value <- reactiveVal(0) # this is for synchronizing time with animation time
 
@@ -208,7 +216,7 @@ function(input, output, session) {
       geom_path(
         data = fixed_circle,
         aes(x, y),
-        color = "gray70",
+        color = "black",
         linewidth = 0.8
       ) +
       geom_path(
@@ -222,7 +230,7 @@ function(input, output, session) {
           geom_path(
             data = curve,
             aes(x, y),
-            color = "#E85D75",
+            color = input$curve_color,
             linewidth = 1.2
           )
         }
@@ -243,7 +251,7 @@ function(input, output, session) {
       annotate(
         "point",
         x = px, y = py,
-        color = "#E85D75",
+        color = input$curve_color,
         size = 3
       ) +
       coord_fixed(

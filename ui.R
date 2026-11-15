@@ -1,4 +1,5 @@
 library(shiny)
+library(colourpicker)
 
 fluidPage(
 
@@ -33,7 +34,7 @@ fluidPage(
           "Epitrochoid" = "epi"
         )
       ),
-
+      h4("Curve Parameters"),
       sliderInput(
         "R", "Fixed-circle radius",
         min = 1, max = 10, value = 3, step = 0.1
@@ -46,6 +47,12 @@ fluidPage(
         "d", "Tracing-point distance",
         min = 0, max = 5, value = 1, step = 0.1
       ),
+      colourInput(
+        "curve_color",
+        "Traced curve color",
+        value = "#E85D75",
+        showColour = "both"
+      )
     ),
 
 
@@ -63,7 +70,7 @@ fluidPage(
         min = 0, max = 10, value = 0, step = 0.1,
         post = " s",
       ),
-      actionButton("play_pause", "Play / Pause")
+      uiOutput("play_pause_button") 
     )
   )
 )
