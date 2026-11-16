@@ -43,21 +43,28 @@ function(input, output, session) {
   })
   playing <- reactiveVal(FALSE) # check if the animation is ongoing
   # playing () Read the current value; playing(TRUE/FALSE) sets the value
-  output$play_pause_button <- renderUI({
-  #dynamically change pause/play button label and icon 
-  if (playing()) {
-    actionButton( "play_pause", "Pause", icon = icon("pause"))
-  } else {
-    actionButton( "play_pause", "Play", icon = icon("play"))
-  }
-  })
+  observeEvent(input$play_pause, {
+  playing(!playing())
+})
+  observeEvent(playing(), {
+    if (playing()) {
+      updateActionButton(
+        session,
+        "play_pause",
+        label = "Pause",
+        icon = icon("pause")
+      )
+    } else {
+      updateActionButton(
+        session,
+        "play_pause",
+        label = "Play",
+        icon = icon("play")
+      )
+    }
+  }, ignoreInit = TRUE)
   animation_time <- reactiveVal(0)
   last_slider_value <- reactiveVal(0) # this is for synchronizing time with animation time
-
-  observeEvent(input$play_pause, {
-    playing(!playing())
-  })
-
   # changing any settings forces playback to stop and recheck the time animation bar
   observeEvent(
     list(input$R, input$r, input$d, input$type, input$duration),

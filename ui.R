@@ -79,7 +79,7 @@ fluidPage(
         min = 0, max = 10, value = 0, step = 0.1,
         post = " s",
       ),
-      uiOutput("play_pause_button") 
+      actionButton("play_pause", "Play", icon = icon("play"))
     )
   ),    
   tags$style(HTML("
