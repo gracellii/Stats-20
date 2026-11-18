@@ -21,6 +21,18 @@ epitrochoids <- function(R, r, d, theta) {
   data.frame(theta = theta, x = x, y = y)
 }
 
+#Evolvent
+#x(t) = r(cos(t + a) + t sin(t + a))
+#y(t) = r(sin(t + a)  - t cos(t + a))
+#- Evolvent. A taut string unwinds from a fixed circle, and its free endpoint traces the curve. The animation will show the string unwinding and the resulting path.
+
+#- Peri-cycloidal. A larger moving circle encloses a smaller fixed circle and rolls without slipping around it, with a point on the moving circle’s circumference tracing the curve.
+
+#- Cycloidal. A circle rolls without slipping along a straight line, and a point on its circumference traces the curve. Adjusting the tracing point’s distance from the center produces trochoids.
+
+
+
+
 # when R/r = m/n, where m and n are both integers
 # theta = 2pi n completes a full cycle for both
 gcd <- function(a, b) {

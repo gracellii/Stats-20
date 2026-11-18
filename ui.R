@@ -38,11 +38,11 @@ fluidPage(
 
       h4("Curve Parameters"),
       sliderInput(
-        "R", "Fixed-circle radius",
+        "R", "Fixed-circle radius (R)",
         min = 1, max = 10, value = 3, step = 0.1
       ),
       sliderInput(
-        "r", "Rolling-circle radius",
+        "r", "Rolling-circle radius (r)",
         min = 0.1, max = 5, value = 1, step = 0.1
       ),
       sliderInput(
