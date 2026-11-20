@@ -74,8 +74,8 @@ function(input, output, session) {
   playing <- reactiveVal(FALSE) # check if the animation is ongoing
   # playing () Read the current value; playing(TRUE/FALSE) sets the value
   observeEvent(input$play_pause, {
-  playing(!playing())
-})
+    playing(!playing())
+  })
   observeEvent(playing(), {
     if (playing()) {
       updateActionButton(
@@ -153,6 +153,14 @@ function(input, output, session) {
 
     animation_time(
       min(input$duration, max(0, input$time_seek))
+    )
+  })
+
+  observeEvent(input$make_cycloid, {
+    updateSliderInput(
+      session,
+      "d",
+      value = input$r
     )
   })
 
@@ -241,7 +249,6 @@ function(input, output, session) {
         to a taut string", strong("unwinding from a fixed circle"),"\n*Note: R is unused"
       )
     }
-
   })
 
   output$plot <- renderPlot({

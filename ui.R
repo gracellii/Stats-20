@@ -49,8 +49,12 @@ fluidPage(
         min = 0.1, max = 10, value = 1, step = 0.1
       ),
       sliderInput(
-        "d", "Tracing-point distance",
+        "d", "Tracing-point distance (d)",
         min = 0, max = 10, value = 1, step = 0.1
+      ),
+      actionButton(
+        "make_cycloid",
+        "Trace circumference (d = r)"
       ),
       h4("Appearance"),
       colourInput(
