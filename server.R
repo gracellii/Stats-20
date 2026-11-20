@@ -12,8 +12,8 @@ hypotrochoid <- function(R, r, d, theta) {
   data.frame(theta = theta, x = x, y = y)
 }
 
-epitrochoids <- function(R, r, d, theta) {
-  stopifnot(R > r, r > 0)
+epitrochoid <- function(R, r, d, theta) {
+  stopifnot(r > 0)
 
   x <- (R + r) * cos(theta) - d * cos((R + r) / r * theta)
   y <- (R + r) * sin(theta) - d * sin((R + r) / r * theta)
@@ -21,17 +21,35 @@ epitrochoids <- function(R, r, d, theta) {
   data.frame(theta = theta, x = x, y = y)
 }
 
+peritrochoid <- function (R, r, d, theta){
+  #pericycloid: when r = d)
+  stopifnot(r > R, r > 0)
+  x <- (r - R) * cos(theta) - d * cos((r - R) / r * theta)
+  y <- (r - R) * sin(theta) - d * sin((r - R) / r * theta)
+
+  data.frame(theta = theta, x = x, y = y)
+}
+
+#Cycloid/trochoid
+cycloid <- function (r, d, theta){
+  x <- r*theta - d*sin(theta)
+  y <- r - d*cos(theta)
+  #x = r(t - sint)
+  #y = r(1-cos t)
+  #For given t, the circle’s centre lies at (x,y) = (rt, r)
+  data.frame(theta = theta, x = x, y = y)
+}
+
 #Evolvent
-#x(t) = r(cos(t + a) + t sin(t + a))
-#y(t) = r(sin(t + a)  - t cos(t + a))
-#- Evolvent. A taut string unwinds from a fixed circle, and its free endpoint traces the curve. The animation will show the string unwinding and the resulting path.
+#A taut string unwinds from a fixed circle, and its free endpoint traces the curve. The animation will show the string unwinding and the resulting path.
+evolvent <- function (R, r, d, theta){
+  stopifnot(r > 0)
 
-#- Peri-cycloidal. A larger moving circle encloses a smaller fixed circle and rolls without slipping around it, with a point on the moving circle’s circumference tracing the curve.
+  x <- r * (cos(theta) + theta * sin(theta))
+  y <- r * (sin(theta)  - theta * cos(theta))
 
-#- Cycloidal. A circle rolls without slipping along a straight line, and a point on its circumference traces the curve. Adjusting the tracing point’s distance from the center produces trochoids.
-
-
-
+  data.frame(theta = theta, x = x, y = y)
+}
 
 # when R/r = m/n, where m and n are both integers
 # theta = 2pi n completes a full cycle for both
@@ -143,9 +161,10 @@ function(input, output, session) {
     r <- input$r
     d <- input$d
 
-    validate(need(R > r, "Choose R greater than r."))
-
-    theta_end <- 2 * pi * n()
+    if (input$type == "cyc" || input$type == "evol")
+      theta_end <- 2 * pi   #doesnt depend on n for a cycloid or evolvent
+    else
+      theta_end <- 2 * pi * n()
 
     theta <- seq(
       0, theta_end,
@@ -153,15 +172,40 @@ function(input, output, session) {
     )
 
     if (input$type == "hypo") {
+      validate(need(R > r, "Choose R greater than r."))
       curve <- hypotrochoid(R, r, d, theta)
       center_distance <- R - r
-    } else {
-      curve <- epitrochoids(R, r, d, theta)
+
+    } else if (input$type == "epi") {
+      curve <- epitrochoid(R, r, d, theta)
       center_distance <- R + r
+
+    } else if (input$type == "peri"){
+      validate(need(r > R, "Choose r greater than R."))
+      curve <- peritrochoid(R,r,d,theta)
+      center_distance <- r - R
+
+    } else if (input$type == "cyc"){
+      curve <- cycloid(r, d, theta)
+
+      curve$cx <- r * theta
+      curve$cy <- rep(r, length(theta))
+
+      center_distance <- NA   #undefined
+    } else {
+      #evolvent
+      curve <- evolvent(R,r,d,theta)
+
+      curve$cx <- r * cos(theta)
+      curve$cy <- r * sin(theta)
+
+      center_distance <- NA
     }
 
-    curve$cx <- center_distance * cos(theta)
-    curve$cy <- center_distance * sin(theta)
+    if (input$type != "cyc" & input$type != "evol"){
+      curve$cx <- center_distance * cos(theta)
+      curve$cy <- center_distance * sin(theta)
+    }
 
     list(
       points = curve,
@@ -175,12 +219,29 @@ function(input, output, session) {
         "A", strong("hypotrochoid"), "is a curve traced by a point attached
         to a circle rolling", strong("inside"), "a larger static circle."
       )
-    } else {
+    } else if (input$type == "epi") {
       div( class = "curve-description",
         "An",strong("epitrochoid"), "is a curve traced by a point attached
         to a circle rolling", strong("outside"), "a larger static circle."
       )
+    } else if (input$type == "peri"){
+      div( class = "curve-description",
+        "A",strong("peritrochoid"), "is a curve traced by a point attached
+        to a circle", strong("containing"), "a smaller static circle."
+      )
+    }else if (input$type == "cyc"){
+      div( class = "curve-description",
+        "A",strong("trochoid"), "is a curve traced by a point attached
+        to a circle rolling", strong("along a straight line."),"\n*Note: R is unused"
+      )
+    }else {
+      #evolvent
+      div( class = "curve-description",
+        "An",strong("evolvent"), ", also known as the involute of a circle, is a curve traced by a point attached
+        to a taut string", strong("unwinding from a fixed circle"),"\n*Note: R is unused"
+      )
     }
+
   })
 
   output$plot <- renderPlot({
@@ -211,14 +272,6 @@ function(input, output, session) {
     curve <- all_points[seq_len(last_index), ]
     # theta_now <- tail(curve$theta, 1)
 
-    # if (input$type == "hypo") {
-      # curve <- hypotrochoid(R, r, d, theta)
-      # center_distance <- R - r
-    # } else if (input$type == "epi") {
-      # curve <- epitrochoids(R, r, d, theta)
-      # center_distance <- R + r
-    # }
-
     # cx <- center_distance * cos(theta_now)
     cx <- all_points$cx[last_index]
     # cy <- center_distance * sin(theta_now)
@@ -232,12 +285,34 @@ function(input, output, session) {
 
     phi <- seq(0, 2 * pi, length.out = 150)
     # Fixed limits include both circles and the entire possible trace.
-    extent <- max(R, center_distance + r,
-                  center_distance + d) * 1.1
+
+    if (input$type == "cyc") {
+      x_limits <- c(-r * 1.1, 2 * pi * r + r * 1.1)   
+      #cycloid travels horizontally
+
+      y_limits <- c(
+        min(0, r - d) - 0.2 * r,
+        max(2 * r, r + d) + 0.2 * r
+      )
+
+    }else if (input$type == "evol"){
+      extent <- max(r, abs(all_points$x), abs(all_points$y)) * 1.1
+
+      x_limits <- c(-extent, extent)
+      y_limits <- c(-extent, extent)
+    }else {
+      extent <- max(R, center_distance + r,
+                    center_distance + d) * 1.1
+
+      x_limits <- c(-extent, extent)
+      y_limits <- c(-extent, extent)
+    }
+
+    base_radius <- if (input$type == "evol") r else R
 
     fixed_circle <- data.frame(
-      x = R * cos(phi),
-      y = R * sin(phi)
+      x = base_radius * cos(phi),
+      y = base_radius * sin(phi)
     )
 
     rolling_circle <- data.frame(
@@ -245,20 +320,33 @@ function(input, output, session) {
       y = cy + r * sin(phi)
     )
 
-    p <- ggplot() +
-      geom_path(
-        data = fixed_circle,
-        aes(x, y),
-        color = "black",
-        linewidth = 0.8
-      ) +
-      geom_path(
-        data = rolling_circle,
-        aes(x, y),
-        color = input$circle_color,
-        linewidth = 0.8
-      ) +
-      {
+    p <- ggplot() + {
+      if (input$type == "cyc") {
+        #plot the line for the cycloid
+        geom_hline(
+          yintercept = 0,
+          color = "black",
+          linewidth = 0.8
+        )
+      } else {
+        geom_path(
+          data = fixed_circle,
+          aes(x, y),
+          color = "black",
+          linewidth = 0.8
+        )
+      }
+    } + {
+        if (input$type != "evol")
+        {
+          geom_path(
+          data = rolling_circle,
+          aes(x, y),
+          color = input$circle_color,
+          linewidth = 0.8
+        )
+        } 
+      } + {
         if (nrow(curve) >= 2) {
           geom_path(
             data = curve,
@@ -288,8 +376,8 @@ function(input, output, session) {
         size = 3
       ) +
       coord_fixed(
-        xlim = c(-extent, extent),
-        ylim = c(-extent, extent),
+        xlim = x_limits,
+        ylim = y_limits,
         expand = FALSE
       ) +
       theme_void() +

@@ -31,7 +31,10 @@ fluidPage(
         "type", "Curve type",
         choices = c(
           "Hypotrochoid" = "hypo",
-          "Epitrochoid" = "epi"
+          "Epitrochoid" = "epi",
+          "Pericycloid"= "peri",
+          "Evolvent" = "evol",
+          "Cycloid" = "cyc"
         )
       ),
       uiOutput("curve_description"),
@@ -43,11 +46,11 @@ fluidPage(
       ),
       sliderInput(
         "r", "Rolling-circle radius (r)",
-        min = 0.1, max = 5, value = 1, step = 0.1
+        min = 0.1, max = 10, value = 1, step = 0.1
       ),
       sliderInput(
         "d", "Tracing-point distance",
-        min = 0, max = 5, value = 1, step = 0.1
+        min = 0, max = 10, value = 1, step = 0.1
       ),
       h4("Appearance"),
       colourInput(
@@ -77,7 +80,7 @@ fluidPage(
       sliderInput(
         "time", "Time elapsed",
         min = 0, max = 10, value = 0, step = 0.1,
-        post = " s",
+        post = " s"
       ),
       actionButton("play_pause", "Play", icon = icon("play"))
     )

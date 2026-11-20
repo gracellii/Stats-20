@@ -1,6 +1,6 @@
 # Stats 20 Shiny App
 
-An interactive R Shiny application for exploring the `diamonds` dataset with customizable scatter plots.
+An interactive R Shiny application for generating cycloidal curves with customizable graphs.
 
 ## Requirements
 
